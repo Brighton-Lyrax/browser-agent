@@ -1,0 +1,21 @@
+services:
+  bot:
+    build: .
+    ports:
+      - "8788:8788"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - TZ=UTC
+  frontend:
+    image: python:3.13-slim
+    working_dir: /site
+    command: >
+      bash -lc "pip install -q http-server-bin
+      && http-server-bin -p 3000"
+    volumes:
+      - ./landing:/site:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - bot

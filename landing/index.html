@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lead Response Bot</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem; background:#0b0c10; color:#d8dde6; }
+    .box { max-width: 720px; margin: auto; padding: 32px; border: 1px solid #2a2f3a; border-radius: 16px; }
+    h1 { font-size: 2rem; margin: 0 0 16px; }
+    p { line-height: 1.7; color:#b6bcc8; }
+    label { display:block; margin-top:14px; font-weight:600; }
+    input, select, textarea { width:100%; padding:12px 14px; border-radius:12px; border:1px solid #2f343e; background:#11141b; color:#e6ecf2; }
+    button { margin-top:18px; padding:12px 16px; border:none; border-radius:14px; background:#60a5fa; color:#0b0c10; font-weight:700; }
+    .pill { display:inline-block; padding:8px 12px; border-radius:999px; background:#22262f; color:#c9d1d9; margin-top:16px; }
+  </style>
+</head>
+<body>
+  <main class="box">
+    <h1>See the bot in action</h1>
+    <p>Drop a test lead below. You'll see how fast it routes, sets follow-ups, and logs revenue impact.</p>
+    <form id="leadForm">
+      <label>Name</label><input id="name" required />
+      <label>Email</label><input id="email" type="email" required />
+      <label>Company</label><input id="company" />
+      <label>Interest</label>
+      <select id="interest">
+        <option>automation</option>
+        <option>analytics</option>
+        <option>integration</option>
+        <option>support</option>
+      </select>
+      <button type="submit">Claim my spot</button>
+    </form>
+    <div id="result" class="pill" aria-live="polite"></div>
+  </main>
+  <script>
+    const form = document.getElementById('leadForm');
+    const result = document.getElementById('result');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      result.textContent = 'Sending...';
+      try {
+        const res = await fetch('http://localhost:8788/api/lead', {
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          body: JSON.stringify({
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            company: document.getElementById('company').value,
+            interest: document.getElementById('interest').value,
+            source: 'landing'
+          })
+        });
+        const data = await res.json();
+        result.textContent = `Lead id: ${data.lead_id} | first reply: ${data.first_reply_seconds}s`;
+      } catch (err) {
+        result.textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
