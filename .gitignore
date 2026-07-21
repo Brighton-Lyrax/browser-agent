@@ -1,0 +1,12 @@
+__pycache__/
+.venv/
+.venv3/
+.venv3*/
+venv/
+.env
+.parcel-cache/
+data/
+node_modules/
+dist/
+.DS_Store
+Thumbs.db

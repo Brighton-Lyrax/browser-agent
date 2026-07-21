@@ -162,6 +162,31 @@ async def update_template(key: str, payload: dict):
     TEMPLATES.write_text(json.dumps(current, indent=2), encoding="utf-8")
     return {"ok": True, "key": key}
 
+_CHECKOUT = DATA / "checkouts.jsonl"
+
+class CheckoutCreate(BaseModel):
+    lead_email: str
+    item: str
+    price_id: str | None = None
+    payment_link: str | None = None
+    success_url: str | None = None
+    cancel_url: str | None = None
+
+@app.post("/api/checkout")
+async def create_checkout(payload: CheckoutCreate):
+    row = payload.model_dump()
+    row["created_at"] = datetime.now(timezone.utc).isoformat()
+    row["checkout_id"] = f"CO-{int(time.time())}"
+    row["status"] = "pending"
+    _append_jsonl(_CHECKOUT, row)
+    _append_jsonl(EVENTS, {"ts": row["created_at"], "event": "checkout_created", "lead_id": row["lead_email"], "checkout_id": row["checkout_id"]})
+    return {"ok": True, "checkout_id": row["checkout_id"], "status": row["status"]}
+
+@app.get("/api/checkout")
+async def list_checkouts(limit: int = 20):
+    rows = _read_jsonl(_CHECKOUT, limit)
+    return {"count": len(rows), "latest": rows}
+
 @app.post("/webhook/{source}")
 async def generic_webhook(source: str, request: Request):
     body = await request.json()
