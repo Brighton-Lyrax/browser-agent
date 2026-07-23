@@ -77,7 +77,11 @@ app.add_middleware(
 )
 
 @app.get("/")
-async def root():
+async def root(request: Request):
+    accept = (request.headers.get("accept") or "").lower()
+    path = BASE / "landing" / "index.html"
+    if "text/html" in accept and path.exists():
+        return HTMLResponse(path.read_text(encoding="utf-8"))
     return {"ok": True, "app": "ReplyPilot", "health": "/health", "docs": "/docs", "repo": "https://github.com/Brighton-Lyrax/browser-agent"}
 
 

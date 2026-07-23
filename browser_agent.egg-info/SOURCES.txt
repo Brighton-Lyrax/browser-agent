@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+app/config.py
+app/main.py
+app/payment.py
+browser_agent.egg-info/PKG-INFO
+browser_agent.egg-info/SOURCES.txt
+browser_agent.egg-info/dependency_links.txt
+browser_agent.egg-info/requires.txt
+browser_agent.egg-info/top_level.txt
