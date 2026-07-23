@@ -30,7 +30,7 @@ def main():
     import os
     token = os.environ.get("GUMROAD_ACCESS_TOKEN", "")
     if not token:
-        print("GUMROAD_ACCESS_TOKEN missing")
+        print("GUMROAD_ACCESS_TOKEN missing; sync skipped")
         return
     req = urllib.request.Request(
         "https://api.gumroad.com/v2/sales",
@@ -52,8 +52,26 @@ def main():
             "email": sale.get("email"),
         }
         log_revenue_event(event)
-    append_revenue_md(f"Gumroad sales={len(sales)} estimated_usd={total_cents/100:.2f}")
+    summary = f"Gumroad sales={len(sales)} estimated_usd={total_cents/100:.2f}"
+    append_revenue_md(summary)
     print(f"synced sales={len(sales)} est_usd={total_cents/100:.2f}")
+    try:
+        import os as _os
+        bot_token = _os.environ.get("TELEGRAM_BOT_TOKEN", "")
+        chat_id = _os.environ.get("TELEGRAM_CHAT_ID", "")
+        if bot_token and chat_id and total_cents > 0:
+            text = f"Revenue sync: {summary}"
+            payload = json.dumps({"chat_id": chat_id, "text": text, "parse_mode": "Markdown"}).encode("utf-8")
+            req = urllib.request.Request(
+                f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                data=payload,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                resp.read()
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

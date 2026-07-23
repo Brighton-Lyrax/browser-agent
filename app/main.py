@@ -126,11 +126,15 @@ def _ensure_templates():
             },
             "followup_1": {
                 "subject": "Quick next step, {name}",
-                "body": "Hi {name},\n\nChecking in — last message got buried. Do you still want to talk this week?\n\nReply and I’ll send 3 focused options.\n\nBest,\n{Sender}"
+                "body": "Hi {name},\n\nChecking in — last message got buried. Do you still want to talk this week?\n\nReply and I’ll send 3 focused options.\n\n{payment_here}\n\nBest,\n{Sender}"
             },
             "followup_2": {
                 "subject": "Last check-in, {name}",
-                "body": "Hi {name},\n\nI don't want to keep emailing if this isn't a fit. If you're still interested, pick one:\n\n- 15 min call\n- async video\n- pricing doc\n\nIf not, no reply needed.\n\nBest,\n{Sender}"
+                "body": "Hi {name},\n\nI don't want to keep emailing if this isn't a fit. If you're still interested, pick one:\n\n- 15 min call\n- async video\n- pricing doc\n\nIf not, no reply needed.\n\n{payment_here}\n\nBest,\n{Sender}"
+            },
+            "purchase_confirm": {
+                "subject": "Purchase confirmed, {name}",
+                "body": "Hi {name},\n\nYour purchase is confirmed. We're preparing access now.\n\nDM to expedite onboarding.\n\nBest,\n{Sender}"
             }
         }
         TEMPLATES.write_text(json.dumps(defaults, indent=2), encoding="utf-8")
@@ -230,6 +234,19 @@ class CheckoutCreate(BaseModel):
     payment_link: str | None = None
     success_url: str | None = None
     cancel_url: str | None = None
+
+
+ITEM_LINKS: dict[str, str] = {}
+for _item_key, _env_key in [
+    ("hobby", "GUMROAD_HOBBY_LINK"),
+    ("pro", "GUMROAD_PRO_LINK"),
+    ("agency", "GUMROAD_AGENCY_LINK"),
+    ("lead-response", "GUMROAD_CHECKOUT_LINK"),
+]:
+    _val = os.getenv(_env_key, "").strip()
+    if _val:
+        ITEM_LINKS[_item_key] = _val
+
 
 def _normal_base_url(lead_email: str) -> str:
     candidate = BASE_URL
@@ -333,7 +350,15 @@ async def create_checkout(payload: CheckoutCreate):
         row["session_url"] = order_url
         if err_text:
             row["error"] = err_text[:500]
-    else:
+    elif ITEM_LINKS:
+        item_code = (payload.item or "lead-response").strip().lower()
+        provider_payment_link = ITEM_LINKS.get(item_code) or ITEM_LINKS.get("lead-response")
+        if provider_payment_link:
+            row["status"] = "redirect"
+            row["provider_payment_link"] = provider_payment_link
+            row["session_url"] = None
+            row["provider_session_id"] = None
+    if row.get("status") == "pending":
         row["status"] = "unconfigured"
 
     _append_jsonl(CHECKOUTS, row)
