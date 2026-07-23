@@ -1,9 +1,6 @@
-"""
-Gumroad webhook handler stub.
-
-Set GUMROAD_WEBHOOK_SECRET in .env to verify signatures.
-"""
 from __future__ import annotations
+
+"""Gumroad webhook handler stub."""
 
 import hashlib
 import hmac
@@ -29,7 +26,8 @@ def _verify(body: bytes, secret: str, signature: str | None) -> bool:
 async def gumroad_webhook(request: Request):
     raw = await request.body()
     sig = request.headers.get("X-Gumroad-Signature")
-    from app.main import _load_project_env; _load_project_env()
+    from app.main import _load_project_env
+    _load_project_env()
     import os
     secret = os.getenv("GUMROAD_WEBHOOK_SECRET", "")
     if secret and not _verify(raw, secret, sig):
