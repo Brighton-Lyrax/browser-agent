@@ -26,7 +26,7 @@ CHANNELS = {
 
 def main():
     parser = argparse.ArgumentParser(description="ReplyPilot channel poster")
-    parser.add_argument("channel", choices=list(CHANNELS.keys()) + ["all"], help="target channel")
+    parser.add_argument("channel", nargs="?", choices=list(CHANNELS.keys()) + ["all"], help="target channel")
     parser.add_argument("--content", required=False, default="", help="post text")
     parser.add_argument("--url", required=False, default="", help="optional link")
     parser.add_argument("--media", required=False, default="", help="comma-separated media URLs")
@@ -41,6 +41,9 @@ def main():
             status = "ready" if not missing else f"missing: {missing}"
             print(f"{name}: {status}")
         return
+
+    if not args.channel:
+        parser.error("channel is required unless using --list")
 
     post_obj = ChannelPost(
         content=args.content,

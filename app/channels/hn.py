@@ -4,8 +4,8 @@ from typing import Optional
 from .base import ChannelPost
 
 def missing() -> Optional[str]:
-    return None
+    return "needs-session-automation"
+
 
 def post(post: ChannelPost) -> dict:
-    # HN posting requires authenticated session; left as manual-ready stub
     return {"ok": False, "error": "HN posting not implemented; needs session automation"}
