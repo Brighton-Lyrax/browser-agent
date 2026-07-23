@@ -65,7 +65,7 @@ def draft(source, handle):
         "status": "drafted",
         "template": key,
     }
-    print("SAVED:", save_prospect(row))
+    return save_prospect(row)
 
 
 if __name__ == "__main__":
