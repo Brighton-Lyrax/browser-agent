@@ -76,6 +76,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+async def root():
+    return {"ok": True, "app": "ReplyPilot", "health": "/health", "docs": "/docs", "repo": "https://github.com/Brighton-Lyrax/browser-agent"}
+
+
 class Lead(BaseModel):
     name: str
     email: str
