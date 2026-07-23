@@ -3,80 +3,59 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lead Response Bot</title>
+  <title>ReplyPilot — Sub-30-Second Lead Reply API + Browser Automation</title>
+  <meta name="description" content="Open-source lead capture and reply API with browser automation, follow-up queue, revenue attribution, and checkout in one deployable backend." />
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem; background:#0b0c10; color:#d8dde6; }
-    .box { max-width: 720px; margin: auto; padding: 32px; border: 1px solid #2a2f3a; border-radius: 16px; }
-    h1 { font-size: 2rem; margin: 0 0 16px; }
-    p { line-height: 1.7; color:#b6bcc8; }
-    label { display:block; margin-top:14px; font-weight:600; }
-    input, select, textarea { width:100%; padding:12px 14px; border-radius:12px; border:1px solid #2f343e; background:#11141b; color:#e6ecf2; }
-    button { margin-top:18px; padding:12px 16px; border:none; border-radius:14px; background:#60a5fa; color:#0b0c10; font-weight:700; }
-    .pill { display:inline-block; padding:8px 12px; border-radius:999px; background:#22262f; color:#c9d1d9; margin-top:16px; }
+    :root{--bg:#0b0c10;--panel:#141820;--line:#222a35;--text:#e6ecf2;--muted:#8b95a8;--accent:#3b82f6;--accent2:#60a5fa}
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.55}
+    a{color:var(--accent2)}
+    header{border-bottom:1px solid var(--line);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+    header h1{font-size:18px;letter-spacing:.06em;margin:0}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:13px}
+    main{max-width:1080px;margin:0 auto;padding:48px 24px}
+    .hero{margin:40px 0 60px}
+    .hero h2{font-size:44px;line-height:1.15;margin:0 0 14px}
+    .hero h2 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{color:var(--muted);font-size:15px;max-width:640px}
+    .cta{display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#0b0c10;text-decoration:none;font-weight:700;margin-top:14px;font-size:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:28px 0 52px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+    .card h3{margin:0 0 6px;font-size:13px;color:var(--muted)}
+    .card p{margin:0;font-size:28px;font-weight:700}
+    footer{border-top:1px solid var(--line);padding:14px 24px;color:var(--muted);font-size:12px;text-align:center}
   </style>
 </head>
 <body>
-  <main class="box">
-    <h1>See the bot in action</h1>
-    <p>Drop a test lead below. You'll see how fast it routes, sets follow-ups, and logs revenue impact.</p>
-    <form id="leadForm">
-      <label>Name</label><input id="name" required />
-      <label>Email</label><input id="email" type="email" required />
-      <label>Company</label><input id="company" />
-      <label>Interest</label>
-      <select id="interest">
-        <option>automation</option>
-        <option>analytics</option>
-        <option>integration</option>
-        <option>support</option>
-      </select>
-      <button type="submit">Claim my spot</button>
-    </form>
-    <div id="result" class="pill" aria-live="polite"></div>
-  </main>
-  <script>
-    const form = document.getElementById('leadForm');
-    const result = document.getElementById('result');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      result.textContent = 'Sending...';
-      try {
-        const leadRes = await fetch('/api/lead', {
-          method:'POST',
-          headers:{'content-type':'application/json'},
-          body: JSON.stringify({
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            company: document.getElementById('company').value,
-            interest: document.getElementById('interest').value,
-            source: 'landing'
-          })
-        });
-        const leadData = await leadRes.json().catch(() => ({}));
-        if (!leadRes.ok) throw new Error(typeof leadData === 'string' ? leadData : JSON.stringify(leadData));
-        const checkoutRes = await fetch('/api/checkout', {
-          method:'POST',
-          headers:{'content-type':'application/json'},
-          body: JSON.stringify({
-            lead_email: document.getElementById('email').value,
-            item: 'lead-response'
-          })
-        });
-        const checkoutData = await checkoutRes.json().catch(() => ({}));
-        if (!checkoutRes.ok) throw new Error(typeof checkoutData === 'string' ? checkoutData : JSON.stringify(checkoutData));
-        if (checkoutData.session_url) {
-          window.location.href = checkoutData.session_url;
-          return;
-        }
-        if (checkoutData.payment_link) {
-          window.location.href = checkoutData.payment_link;
-          return;
-        }
-        result.textContent = `Lead saved. Checkout status: ${checkoutData.status || 'unknown'}`;
-      } catch (err) {
-        result.textContent = 'Error: ' + err.message;
-      }
-    });
-  </script>
+<header>
+  <h1>ReplyPilot</h1>
+  <nav>
+    <a href="#deploy">Deploy</a>
+    <a href="#pricing">Pricing</a>
+    <a href="https://github.com/Brighton-Lyrax/browser-agent">GitHub</a>
+  </nav>
+</header>
+<main>
+  <section class="hero">
+    <h2>Sub-30-second lead <span>reply API + browser automation.</span></h2>
+    <p>Capture leads, reply fast, queue follow-ups, track revenue impact, and accept payments from one FastAPI backend.</p>
+    <a class="cta" href="#deploy">Deploy in 3 minutes →</a>
+  </section>
+  <section class="grid">
+    <div class="card"><h3>Lead Capture</h3><p>Any channel</p></div>
+    <div class="card"><h3>First Reply</h3><p>&lt;30 seconds</p></div>
+    <div class="card"><h3>Follow-Up Queue</h3><p>Multi-channel</p></div>
+    <div class="card"><h3>Revenue Report</h3><p>Attribution</p></div>
+    <div class="card"><h3>Checkout</h3><p>PayPal + Stripe</p></div>
+    <div class="card"><h3>Browser Actions</h3><p>Automation hooks</p></div>
+  </section>
+  <section id="deploy">
+    <h2>Quick deploy</h2>
+    <pre style="background:#141820;border:1px solid #222a35;border-radius:8px;padding:14px;overflow:auto"><code>git clone https://github.com/Brighton-Lyrax/browser-agent
+cd browser-agent && docker compose up</code></pre>
+    <p style="color:var(--muted);margin-top:10px">Open landing at <code>http://localhost:3000</code>. API at <code>http://localhost:8788</code>.</p>
+  </section>
+</main>
+<footer>ReplyPilot · Open source, MIT · Built by Brighton-Lyrax</footer>
 </body>
 </html>
