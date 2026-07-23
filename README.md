@@ -3,36 +3,25 @@
 
 ReplyPilot turns inbound leads into booked revenue automatically. Capture leads from any channel, reply within 30 seconds with human-quality messaging, queue follow-ups, attribute revenue, and accept payments — all from one Python API.
 
----
+## Live
+- Site: https://browser-agent-steel.vercel.app
+- Docs: https://browser-agent-steel.vercel.app/docs
+- Hobby: https://brightonlyrax.gumroad.com/l/rzafxw
+- Pro: https://brightonlyrax.gumroad.com/l/nlqnr
+- Agency: https://brightonlyrax.gumroad.com/l/seixck
+- Release: https://github.com/Brighton-Lyrax/browser-agent/releases/tag/v0.4.0
 
-## Features
-
-- Lead capture API
-- Sub-30-second first-reply engine
-- Multi-channel follow-up queue
-- Revenue attribution dashboard
-- Checkout / webhook routes
-- Browser automation hooks
-- Self-hosted or hosted
-- Multi-provider billing: Stripe, PayPal, LemonSqueezy, Polar, Gumroad
-
-## Quick start
-
+## Quickstart
 ```bash
-git clone https://github.com/Brighton-Lyrax/browser-agent.git
-cd browser-agent
-docker compose up
+git clone https://github.com/Brighton-Lyrax/browser-agent
+cd browser-agent && docker compose up
 ```
 
-Open `http://localhost:3000` for the landing demo.
+## Content
+- Content calendar: /marketing/calendar/q3-2026.md
+- Campaign plan: /marketing/campaign_series
+- DM sequences: /marketing/dm_sequences
+- Outreach CLI: /scripts/outreach_manager.py
 
-## API docs
-
-See `docs/openapi.yaml` or run the app and open `/docs`.
-
----
-
-**Built for agencies, SMBs, and dev shops that lose deals to slow replies.**  
-**Brand:** ReplyPilot  
-**Company:** Brighton-Lyrax  
-**License:** MIT
+## Revenue monitoring
+Run `python scripts/gumroad_sales_sync.py` to sync sales into `/logs/revenue.md` and `/data/events.jsonl`.
