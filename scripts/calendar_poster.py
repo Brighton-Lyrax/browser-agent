@@ -37,6 +37,19 @@ def pick_today(items):
     return items[idx]
 
 
+def render_text(pick):
+    template_map = {
+        "twitter": "🚀 {text}",
+        "linkedin": "📢 {text}",
+        "reddit": "{text}",
+        "telegram": "📣 {text}",
+        "hn": "📰 {text}",
+        "newsletter": "📧 {text}",
+    }
+    prefix = template_map.get(pick["channel"], "")
+    return prefix.format(text=pick["text"]) if prefix else pick["text"]
+
+
 def main():
     items = load_calendar_items()
     pick = pick_today(items)
@@ -44,7 +57,7 @@ def main():
         print("no calendar items")
         return
     channel = pick["channel"]
-    text = pick["text"]
+    text = render_text(pick)
     if channel == "newsletter":
         print(f"skipping channel: {channel}")
         return

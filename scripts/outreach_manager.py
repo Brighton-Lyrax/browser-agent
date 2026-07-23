@@ -46,16 +46,20 @@ def list_prospects():
 
 
 def draft(source, handle):
+    tpl_dir = BASE / "outreach" / "templates"
     templates = {
-        "email": BASE / "outreach/templates/email.md",
-        "twitter": BASE / "outreach/templates/twitter.md",
-        "hn": BASE / "outreach/templates/hn.md",
-        "reddit": BASE / "outreach/templates/reddit.md",
+        "email": tpl_dir / "email.md",
+        "twitter": tpl_dir / "twitter.md",
+        "hn": tpl_dir / "hn.md",
+        "reddit": tpl_dir / "reddit.md",
     }
     key = (source or "").lower()
     tpl_path = templates.get(key, templates["email"])
-    tpl = tpl_path.read_text(encoding="utf-8").strip()
-    rendered = tpl.replace("{name}", handle)
+    if not tpl_path.exists():
+        rendered = f"Outreach draft for {handle}\n\nHi {handle},\n\nI’m reaching out because your work caught my attention.\n\nIf useful: https://brightonlyrax.gumroad.com/l/rzafxw\n\nBest,\n Brighton"
+    else:
+        text = tpl_path.read_text(encoding="utf-8").strip()
+        rendered = text.replace("{name}", handle)
     print("TEMPLATE:")
     print(rendered)
     row = {
