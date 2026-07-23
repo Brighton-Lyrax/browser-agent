@@ -43,12 +43,16 @@ def main():
         return
     channel = pick["channel"]
     text = pick["text"]
-    if channel not in {"twitter", "telegram"}:
+    if channel == "newsletter":
+        print(f"skipping channel: {channel}")
+        return
+    target = "telegram" if channel in {"twitter", "linkedin", "reddit"} else channel
+    if target not in {"twitter", "telegram"}:
         print(f"skipping channel: {channel}")
         return
     from scripts.channel_poster import main as poster_main
     import sys
-    sys.argv = ["channel_poster.py", channel, "--content", text]
+    sys.argv = ["channel_poster.py", target, "--content", text]
     try:
         poster_main()
     except SystemExit:
