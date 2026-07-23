@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "replypilot"
-version = "0.3.3"
+version = "0.3.4"
 description = "Sub-30-second lead reply API + browser automation"
 requires-python = ">=3.11"
 license = {text = "MIT"}
