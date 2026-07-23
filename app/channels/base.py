@@ -5,6 +5,7 @@ from typing import Optional
 @dataclass
 class ChannelPost:
     content: str
+    title: Optional[str] = None
     url: Optional[str] = None
     media_urls: list[str] | None = None
     tags: list[str] | None = None
