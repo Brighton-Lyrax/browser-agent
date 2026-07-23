@@ -1,0 +1,1 @@
+This API logs lead events, follow-ups, and checkout statuses.

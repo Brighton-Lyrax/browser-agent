@@ -1,0 +1,1 @@
+Stripe, PayPal, LemonSqueezy, Polar, Gumroad bridging ready to wire.

@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: ReplyPilot API
+  version: 0.3.0
+  description: Lead response + browser automation API.
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /api/lead:
+    post:
+      summary: Capture a lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lead"
+      responses:
+        "200":
+          description: Created
+    get:
+      summary: List leads
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Leads
+  /api/followup:
+    post:
+      summary: Queue a follow-up
+      responses:
+        "200":
+          description: Created
+  /api/revenue:
+    get:
+      summary: Revenue attribution report
+      responses:
+        "200":
+          description: Report
+  /api/checkout:
+    post:
+      summary: Create checkout session
+      responses:
+        "200":
+          description: Session
+  /checkout/thanks:
+    get:
+      summary: Checkout success page
+  /webhook/{source}:
+    post:
+      summary: Generic webhook receiver
+components:
+  schemas:
+    Lead:
+      type: object
+      properties:
+        name: { type: string }
+        email: { type: string }
+        company: { type: string }
+        phone: { type: string }
+        source:
+          type: string
+          default: landing
+        interest: { type: string }
+        consent:
+          type: boolean
+          default: true

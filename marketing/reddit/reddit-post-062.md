@@ -1,0 +1,1 @@
+Revenue impact per lead should be tracked from day one.

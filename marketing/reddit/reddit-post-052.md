@@ -1,0 +1,1 @@
+Lead-response latency is the silent killer of conversion.

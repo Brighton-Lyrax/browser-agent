@@ -1,0 +1,1 @@
+This repo made onboarding a lead ops automation easy.

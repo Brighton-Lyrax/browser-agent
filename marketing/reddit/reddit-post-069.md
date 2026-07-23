@@ -1,0 +1,1 @@
+If your team uses Slack for leads, connect this instead.

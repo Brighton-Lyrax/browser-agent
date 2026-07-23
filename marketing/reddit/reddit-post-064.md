@@ -1,0 +1,1 @@
+Simple landing → capture → reply → follow-up → checkout flow.

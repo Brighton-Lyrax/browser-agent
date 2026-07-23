@@ -1,0 +1,1 @@
+You do not need HubSpot to handle lead follow-up.

@@ -1,0 +1,1 @@
+Stop waiting for humans to reply to inbound leads.

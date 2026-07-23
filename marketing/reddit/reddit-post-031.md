@@ -1,0 +1,1 @@
+Stop relying on humans for first replies. Here is one option.

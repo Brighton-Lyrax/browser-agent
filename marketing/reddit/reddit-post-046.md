@@ -1,0 +1,1 @@
+Self-hosted checkout + lead capture should be the default.

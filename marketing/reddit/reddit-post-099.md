@@ -1,0 +1,1 @@
+Lead automation for small teams should not cost thousands.

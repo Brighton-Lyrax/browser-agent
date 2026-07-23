@@ -1,0 +1,1 @@
+We replaced manual lead assignment with this and cut response time.

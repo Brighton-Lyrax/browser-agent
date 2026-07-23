@@ -1,0 +1,1 @@
+Follow-up templates live in JSON, editable without code.

@@ -1,0 +1,1 @@
+One-click self-hosted setup for lead capture and email routing.

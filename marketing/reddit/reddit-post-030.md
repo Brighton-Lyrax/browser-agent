@@ -1,0 +1,1 @@
+Lead bots should be boring infrastructure, not SaaS subscriptions.

@@ -1,0 +1,1 @@
+This repo lets agencies plug lead capture into any frontend.

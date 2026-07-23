@@ -1,0 +1,1 @@
+Revenue attribution plus lead routing is hard; this repo simplifies it.

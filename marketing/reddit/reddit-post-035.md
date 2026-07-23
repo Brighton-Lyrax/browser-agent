@@ -1,0 +1,1 @@
+Free self-hosted lead workflow with Stripe/PayPal checkout integration.

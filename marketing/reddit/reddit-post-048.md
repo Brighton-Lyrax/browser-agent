@@ -1,0 +1,1 @@
+This open-source lead bot has routing, queuing, and reporting built in.

@@ -1,0 +1,1 @@
+If your marketing team cannot reply fast, automation should.

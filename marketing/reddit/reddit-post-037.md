@@ -1,0 +1,1 @@
+Sub-30s lead reply is possible with the right scaffolding.

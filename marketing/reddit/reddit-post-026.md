@@ -1,0 +1,1 @@
+A lead API that logs revenue impact by default = useful audit trail.

@@ -1,0 +1,1 @@
+Fast first replies beat polished follow-ups.

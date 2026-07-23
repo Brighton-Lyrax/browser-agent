@@ -1,0 +1,1 @@
+Browser automation hooks for leads is possible with this setup.
