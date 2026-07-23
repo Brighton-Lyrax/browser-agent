@@ -1,16 +1,17 @@
 from __future__ import annotations
 import os
+import re
 from typing import Optional
 from .base import ChannelPost
 
 
 def missing() -> Optional[str]:
-    missing_fields = []
+    fields = []
     if not os.getenv("HN_USERNAME"):
-        missing_fields.append("HN_USERNAME")
+        fields.append("HN_USERNAME")
     if not os.getenv("HN_PASSWORD"):
-        missing_fields.append("HN_PASSWORD")
-    return ", ".join(missing_fields) if missing_fields else None
+        fields.append("HN_PASSWORD")
+    return ", ".join(fields) if fields else None
 
 
 def post(post: ChannelPost) -> dict:
@@ -28,34 +29,53 @@ def post(post: ChannelPost) -> dict:
         return {"ok": False, "error": "playwright not installed"}
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        context = browser.new_context()
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(user_agent=(
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+        ))
         page = context.new_page()
 
-        logged_in = _is_logged_in(page)
-        print('DEBUG_LOGGED_IN=', logged_in)
-        if not logged_in:
+        if not _is_logged_in(page):
             _login(page, username, password)
+            if not _is_logged_in(page):
+                browser.close()
+                return {"ok": False, "error": "login failed", "state": "login_failed", "url": page.url}
 
-        print('DEBUG_URL_AFTER_LOGIN=', page.url)
-        print('DEBUG_TITLE_AFTER_LOGIN=', page.title())
-        print('DEBUG_VISIBLE_SUBMIT=', page.is_visible("text=submit", timeout=1000))
-
+        # Bypass front-page false-positive by loading submit directly.
         page.goto("https://news.ycombinator.com/submit", timeout=15000, wait_until="domcontentloaded")
-        print('DEBUG_SUBMIT_URL=', page.url)
-        print('DEBUG_SUBMIT_TITLE=', page.title())
-        print('DEBUG_SUBMIT_BODY=', page.evaluate("document.body.innerText")[:2000])
+        body = page.evaluate("document.body.innerText") or ""
+        if "Sorry." in body or "/login" in (page.url or "").lower():
+            browser.close()
+            return {
+                "ok": False,
+                "error": "HN submit unavailable: account may require stronger auth, karma, or is rate-limited",
+                "state": "submit_locked",
+                "url": page.url,
+            }
 
         try:
-            page.locator("input[name='title']").first.fill(title)
-            print('DEBUG_TITLE_FILLED')
-        except Exception as e:
-            print('DEBUG_TITLE_FILL_FAIL=', repr(e))
+            if is_link:
+                page.locator("input[name='title']").first.fill(title)
+                page.locator("input[name='url']").first.fill(post.url or "")
+            else:
+                body_text = (post.content or "").strip()
+                if not body_text:
+                    browser.close()
+                    return {"ok": False, "error": "no content for HN text post"}
+                page.locator("input[name='title']").first.fill(title)
+                page.locator("textarea").first.fill(body_text)
 
-        action = "link" if is_link else "text"
-        result = _perform_action(page, title, action, post.url, post.content)
-        browser.close()
-        return result
+            page.locator("form button[type='submit'], button:has-text('submit')").first.click()
+            try:
+                page.wait_for_load_state("domcontentloaded", timeout=12000)
+            except Exception:
+                pass
+            browser.close()
+            return {"ok": True, "url": page.url, "state": "submitted_or_navigate_pending"}
+        except Exception as exc:
+            browser.close()
+            return {"ok": False, "error": f"submit form action failed: {exc}", "state": "action_failed", "url": page.url}
 
 
 def _is_logged_in(page) -> bool:
@@ -72,26 +92,3 @@ def _login(page, username: str, password: str) -> None:
     page.fill("input[name='pw']", password)
     page.click("button:has-text('login')")
     page.wait_for_url("**/news*", timeout=15000)
-
-
-def _perform_action(page, title: str, action: str, url: Optional[str], text: Optional[str]) -> dict:
-    try:
-        page.locator("input[name='title']").first.fill(title)
-    except Exception as e:
-        return {"ok": False, "error": f"submit form not available: {e}", "state": "form_missing", "url": page.url, "debug_body": page.evaluate("document.body.innerText")[:2000]}
-
-    try:
-        if action == "link" and url:
-            page.locator("input[name='url']").first.fill(url)
-        elif text:
-            textarea = page.locator("textarea").first
-            textarea.fill(text or "")
-
-        page.locator("form button[type='submit'], button:has-text('submit')").first.click()
-        try:
-            page.wait_for_load_state("domcontentloaded", timeout=12000)
-        except Exception:
-            pass
-        return {"ok": True, "url": page.url, "state": "submitted_or_navigate_pending"}
-    except Exception as exc:
-        return {"ok": False, "error": f"submit form action failed: {exc}", "state": "action_failed", "url": page.url, "debug_body": page.evaluate("document.body.innerText")[:2000]}
