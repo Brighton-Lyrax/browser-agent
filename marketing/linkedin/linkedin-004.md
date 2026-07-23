@@ -1,0 +1,1 @@
+Sub-30s first replies without hiring more SDRs

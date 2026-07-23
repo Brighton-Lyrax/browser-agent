@@ -1,0 +1,1 @@
+How lead response latency kills revenue

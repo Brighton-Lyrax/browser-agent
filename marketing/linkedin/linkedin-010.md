@@ -1,0 +1,1 @@
+Browser automation hooks for agency workflows
