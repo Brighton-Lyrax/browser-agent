@@ -6,9 +6,11 @@ app/main.py
 app/payment.py
 app/channels/__init__.py
 app/channels/base.py
+app/channels/discord.py
 app/channels/hn.py
 app/channels/linkedin.py
 app/channels/reddit.py
+app/channels/telegram.py
 app/channels/twitter.py
 app/webhooks/gumroad.py
 browser_agent.egg-info/PKG-INFO

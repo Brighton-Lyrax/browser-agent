@@ -1,1 +1,4 @@
 {"channel": "telegram", "ok": true, "result": {"ok": true, "status": 200}, "ts": "2026-07-23T12:15:23.731146+00:00"}
+{"channel": "twitter", "ok": false, "result": {"ok": false, "error": "401 Unauthorized\nUnauthorized"}, "ts": "2026-07-23T12:21:24.831073+00:00"}
+{"channel": "twitter", "ok": false, "error": "missing env: TWITTER_BEARER_TOKEN, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_REFRESH_TOKEN", "ts": "2026-07-23T12:28:22.989438+00:00"}
+{"channel": "twitter", "ok": false, "result": {"ok": false, "error": "402 Payment Required\ncredits depleted"}, "ts": "2026-07-23T12:28:53.312545+00:00"}
