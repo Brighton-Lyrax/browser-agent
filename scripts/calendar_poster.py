@@ -77,6 +77,7 @@ def main():
         "channel": channel,
         "target": target,
         "content": text,
+        "url": pick.get("url", ""),
     }
     with POST_LOG.open("a", encoding="utf-8") as f:
         f.write(__import__("json").dumps(row) + "\n")

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -9,15 +10,10 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE))
-_env_path = BASE / ".env"
-if _env_path.exists():
+_ENV = BASE / ".env"
+if _ENV.exists():
     from dotenv import load_dotenv
-    load_dotenv(_env_path)
-else:
-    import os
-    for _k in list(os.environ):
-        if _k.startswith("SMTP_") or False:
-            pass
+    load_dotenv(_ENV)
 
 from app.channels.base import ChannelPost
 from app.channels import twitter, reddit, linkedin, hn, telegram, discord
@@ -33,14 +29,29 @@ CHANNELS = {
 }
 
 
-def main():
+def _stable_hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
+
+
+def main() -> None:
     parser = argparse.ArgumentParser(description="ReplyPilot channel poster")
     parser.add_argument("channel", nargs="?", choices=list(CHANNELS.keys()) + ["all"], help="target channel")
     parser.add_argument("--content", required=False, default="", help="post text")
     parser.add_argument("--url", required=False, default="", help="optional link")
     parser.add_argument("--media", required=False, default="", help="comma-separated media URLs")
     parser.add_argument("--list", action="store_true", help="list configured channels")
+    parser.add_argument("--handoff-id", required=False, default="", help="stable handoff identifier")
+    parser.add_argument("--verify-handoff", required=False, default="", help="prevent stale retry if intent/read-set changed")
     args = parser.parse_args()
+
+    intent_source = (args.content + "\n" + args.url + "\n" + args.media).strip()
+    if args.handoff_id:
+        current_hash = "NO_HANDOFF"
+        if intent_source:
+            current_hash = _stable_hash(intent_source)
+        if args.verify_handoff and current_hash not in {args.verify_handoff, "NO_HANDOFF"}:
+            print(json.dumps({"ok": False, "error": "handoff_hash_mismatch", "expected": args.verify_handoff, "actual": current_hash}))
+            sys.exit(0)
 
     if args.list:
         hints = {
@@ -80,15 +91,15 @@ def main():
 
     results = []
     for name, mod in targets:
-        missing = mod.missing() if hasattr(mod, "missing") else None
-        if missing:
-            row = {"channel": name, "ok": False, "error": f"missing env: {missing}"}
+        if hasattr(mod, "missing") and mod.missing():
+            row = {"channel": name, "ok": False, "error": f"missing env: {mod.missing()}"}
         else:
             try:
                 result = mod.post(post_obj)
                 row = {"channel": name, "ok": bool(result.get("ok")) if isinstance(result, dict) else False, "result": result}
             except Exception as e:
                 row = {"channel": name, "ok": False, "error": str(e)}
+        row.setdefault("handoff_id", args.handoff_id)
         results.append(row)
         print(row)
 
