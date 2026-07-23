@@ -1,0 +1,1 @@
+Week 7: Partnerships + compute provider outreach

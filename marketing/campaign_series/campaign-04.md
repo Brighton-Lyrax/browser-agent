@@ -1,0 +1,1 @@
+Week 4: Product Hunt/HN push + self-hosted hosting upsell

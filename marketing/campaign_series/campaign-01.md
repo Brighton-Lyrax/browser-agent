@@ -1,0 +1,1 @@
+Week 1: Launch announcement + Vercel live + Gumroad links
