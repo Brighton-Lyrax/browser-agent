@@ -1,6 +1,5 @@
 from __future__ import annotations
 import os
-import re
 from typing import Optional
 from .base import ChannelPost
 
@@ -36,46 +35,50 @@ def post(post: ChannelPost) -> dict:
         ))
         page = context.new_page()
 
-        if not _is_logged_in(page):
+        logged_in = _is_logged_in(page)
+        if not logged_in:
             _login(page, username, password)
-            if not _is_logged_in(page):
+            logged_in = _is_logged_in(page)
+            if not logged_in:
                 browser.close()
                 return {"ok": False, "error": "login failed", "state": "login_failed", "url": page.url}
 
-        # Bypass front-page false-positive by loading submit directly.
         page.goto("https://news.ycombinator.com/submit", timeout=15000, wait_until="domcontentloaded")
-        body = page.evaluate("document.body.innerText") or ""
-        if "Sorry." in body or "/login" in (page.url or "").lower():
-            browser.close()
-            return {
-                "ok": False,
-                "error": "HN submit unavailable: account may require stronger auth, karma, or is rate-limited",
-                "state": "submit_locked",
-                "url": page.url,
-            }
 
         try:
-            if is_link:
-                page.locator("input[name='title']").first.fill(title)
-                page.locator("input[name='url']").first.fill(post.url or "")
-            else:
-                body_text = (post.content or "").strip()
-                if not body_text:
-                    browser.close()
-                    return {"ok": False, "error": "no content for HN text post"}
-                page.locator("input[name='title']").first.fill(title)
-                page.locator("textarea").first.fill(body_text)
+            page.wait_for_load_state("networkidle", timeout=10000)
+        except Exception:
+            pass
 
-            page.locator("form button[type='submit'], button:has-text('submit')").first.click()
-            try:
-                page.wait_for_load_state("domcontentloaded", timeout=12000)
-            except Exception:
-                pass
-            browser.close()
-            return {"ok": True, "url": page.url, "state": "submitted_or_navigate_pending"}
-        except Exception as exc:
-            browser.close()
-            return {"ok": False, "error": f"submit form action failed: {exc}", "state": "action_failed", "url": page.url}
+        title_input = page.locator("input[name='title']").first
+        if not title_input.count() or not title_input.is_visible():
+            return {
+                "ok": False,
+                "error": "submit form not available: title input missing",
+                "state": "form_missing",
+                "url": page.url,
+                "debug_body": page.evaluate("document.body.innerText")[:200],
+                "debug_html": page.evaluate("document.body.innerHTML")[:500],
+            }
+        title_input.fill(title)
+
+        if is_link:
+            page.locator("input[name='url']").first.fill(post.url or "")
+        else:
+            body_text = (post.content or "").strip()
+            if body_text:
+                textarea = page.locator("textarea").first
+                textarea.wait_for(state="visible", timeout=15000)
+                textarea.fill(body_text)
+
+        page.locator("form button[type='submit'], button:has-text('submit')").first.click()
+
+        try:
+            page.wait_for_load_state("domcontentloaded", timeout=12000)
+        except Exception:
+            pass
+        browser.close()
+        return {"ok": True, "url": page.url, "state": "submitted_or_navigate_pending"}
 
 
 def _is_logged_in(page) -> bool:
@@ -90,5 +93,5 @@ def _login(page, username: str, password: str) -> None:
     page.goto("https://news.ycombinator.com/login", timeout=15000, wait_until="domcontentloaded")
     page.fill("input[name='acct']", username)
     page.fill("input[name='pw']", password)
-    page.click("button:has-text('login')")
+    page.click("input[value='login'], button:has-text('login')")
     page.wait_for_url("**/news*", timeout=15000)
