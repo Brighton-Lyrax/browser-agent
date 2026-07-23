@@ -41,7 +41,7 @@
       e.preventDefault();
       result.textContent = 'Sending...';
       try {
-        const res = await fetch('http://localhost:8788/api/lead', {
+        const leadRes = await fetch('/api/lead', {
           method:'POST',
           headers:{'content-type':'application/json'},
           body: JSON.stringify({
@@ -52,8 +52,27 @@
             source: 'landing'
           })
         });
-        const data = await res.json();
-        result.textContent = `Lead id: ${data.lead_id} | first reply: ${data.first_reply_seconds}s`;
+        const leadData = await leadRes.json().catch(() => ({}));
+        if (!leadRes.ok) throw new Error(typeof leadData === 'string' ? leadData : JSON.stringify(leadData));
+        const checkoutRes = await fetch('/api/checkout', {
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          body: JSON.stringify({
+            lead_email: document.getElementById('email').value,
+            item: 'lead-response'
+          })
+        });
+        const checkoutData = await checkoutRes.json().catch(() => ({}));
+        if (!checkoutRes.ok) throw new Error(typeof checkoutData === 'string' ? checkoutData : JSON.stringify(checkoutData));
+        if (checkoutData.session_url) {
+          window.location.href = checkoutData.session_url;
+          return;
+        }
+        if (checkoutData.payment_link) {
+          window.location.href = checkoutData.payment_link;
+          return;
+        }
+        result.textContent = `Lead saved. Checkout status: ${checkoutData.status || 'unknown'}`;
       } catch (err) {
         result.textContent = 'Error: ' + err.message;
       }
