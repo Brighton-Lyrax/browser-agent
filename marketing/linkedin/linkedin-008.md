@@ -1,1 +1,1 @@
-Building a self-hosted SaaS with Docker Compose in 2026
+Revenue attribution from first touch isn't optional.

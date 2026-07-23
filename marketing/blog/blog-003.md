@@ -1,1 +1,1 @@
-Self-hosted lead automation with Docker
+Self-hosted SaaS: lead capture + checkout in one repo

@@ -1,0 +1,1 @@
+Lead capture → reply → follow-up → checkout. One repo.

@@ -1,1 +1,1 @@
-How lead response latency kills revenue
+How to deploy a lead backend with Stripe + browser hooks

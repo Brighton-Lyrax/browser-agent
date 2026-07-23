@@ -1,1 +1,1 @@
-Why agencies lose money to slow lead replies
+The agencies winning right now reply to leads in under 30 seconds.

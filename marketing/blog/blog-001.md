@@ -1,1 +1,1 @@
-Lead Response API - Intro to ReplyPilot
+Lead Response API: why speed is the unfair advantage

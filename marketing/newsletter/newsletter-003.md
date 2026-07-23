@@ -1,1 +1,1 @@
-ReplyPilot newsletter draft #3 — automation case study
+Issue #3: Self-hosted vs hosted pricing breakdown.

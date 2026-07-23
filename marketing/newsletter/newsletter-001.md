@@ -1,1 +1,1 @@
-ReplyPilot newsletter draft #1 — lead speed
+Issue #1: Why 30-second replies change everything.

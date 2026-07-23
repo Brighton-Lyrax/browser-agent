@@ -1,0 +1,1 @@
+I published our lead response API. It includes Stripe/PayPal.

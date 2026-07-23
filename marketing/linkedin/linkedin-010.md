@@ -1,1 +1,1 @@
-Browser automation hooks for agency workflows
+Lead capture for founders should not require Salesforce.

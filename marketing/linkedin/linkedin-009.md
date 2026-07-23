@@ -1,1 +1,1 @@
-Why open source helps in lead-gen tooling
+Speed wins. Here's a realistic way to automate replies.

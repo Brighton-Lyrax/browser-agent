@@ -1,1 +1,1 @@
-ReplyPilot newsletter draft #5 — onboarding checklist
+Issue #5: Ship a lead bot this weekend.

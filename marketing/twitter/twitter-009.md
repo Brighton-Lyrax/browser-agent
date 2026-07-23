@@ -1,0 +1,1 @@
+Docker compose up in 2m. Landing + API ready.

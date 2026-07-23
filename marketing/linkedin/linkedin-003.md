@@ -1,1 +1,1 @@
-Open-source lead automation stack for dev shops
+Browser automation + FastAPI + billing = ops-ready lead stack.

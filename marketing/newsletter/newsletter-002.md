@@ -1,1 +1,1 @@
-ReplyPilot newsletter draft #2 — product update/billing
+Issue #2: How we built checkout into a lead API cheaply.

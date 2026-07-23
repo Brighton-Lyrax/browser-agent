@@ -1,1 +1,1 @@
-Revenue attribution from the first touch
+Open-source lead automation for dev shops and agencies.

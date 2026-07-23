@@ -1,0 +1,1 @@
+If your CRM still charges per seat, compare with this.

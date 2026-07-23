@@ -1,1 +1,1 @@
-Sub-30s first replies without hiring more SDRs
+How to measure lead-response latency and fix it cheaply.

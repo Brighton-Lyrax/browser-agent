@@ -1,1 +1,1 @@
-Browser automation for lead qualification
+A practical guide to revenue attribution for leads

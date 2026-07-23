@@ -1,1 +1,1 @@
-ReplyPilot newsletter draft #4 — feature roadmap
+Issue #4: JSONL audit trail beats complex event stores.

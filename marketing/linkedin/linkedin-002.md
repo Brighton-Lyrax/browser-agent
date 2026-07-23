@@ -1,1 +1,1 @@
-How to measure lead response latency and fix it
+I open-sourced the lead-response backend our agency uses.

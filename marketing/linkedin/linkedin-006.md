@@ -1,1 +1,1 @@
-Pricing strategy for lead-response tools
+Why we moved from Intercom to a Docker-deployed lead backend.

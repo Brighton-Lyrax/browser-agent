@@ -1,1 +1,1 @@
-Using FastAPI + browser automation to convert more leads
+Self-hosted or hosted: the future of lead infrastructure is open-core.
