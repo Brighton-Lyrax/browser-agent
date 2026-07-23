@@ -16,3 +16,4 @@ dist/
 build/
 .venv311/
 .vercel
+.env
