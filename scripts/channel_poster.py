@@ -43,11 +43,23 @@ def main():
     args = parser.parse_args()
 
     if args.list:
+        hints = {
+            "twitter": "needs_billing_upgrade" if not os.getenv("TWITTER_API_KEY") else "blocked_by_402",
+            "x": "needs_billing_upgrade" if not os.getenv("TWITTER_API_KEY") else "blocked_by_402",
+            "reddit": "needs_reddit_token",
+            "linkedin": "needs_linkedin_token",
+            "hn": "needs_hn_credentials_and_manual_profile",
+            "telegram": "ready",
+            "discord": "needs_discord_token",
+        }
         for name, mod in CHANNELS.items():
             missing = None
             if hasattr(mod, "missing"):
                 missing = mod.missing()
-            status = "ready" if not missing else f"missing: {missing}"
+            if missing:
+                status = f"missing: {missing}"
+            else:
+                status = hints.get(name, "ready")
             print(f"{name}: {status}")
         return
 

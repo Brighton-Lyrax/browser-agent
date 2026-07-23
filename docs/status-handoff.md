@@ -33,3 +33,9 @@ Required human action:
 ## Reproducible Verification
 - curl https://browser-agent-steel.vercel.app/health should return HTTP 200
 - curl -H 'Accept: text/html' https://browser-agent-steel.vercel.app should return HTML with Gumroad links
+
+
+## 2026-07-23 status
+- calendar_posts_total=11
+- calendar_posts_target=telegram: count=4
+- calendar_posts_target=unknown: count=7
