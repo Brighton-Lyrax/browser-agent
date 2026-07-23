@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "replypilot"
+name = "browser-agent"
 version = "0.3.4"
 description = "Sub-30-second lead reply API + browser automation"
 requires-python = ">=3.11"
@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-dependencies = []
+dependencies = ["fastapi==0.115.0", "uvicorn==0.32.0", "pydantic==2.9.2"]
 
 [project.optional-dependencies]
 dev = ["build", "twine"]
