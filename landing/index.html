@@ -23,6 +23,10 @@
     .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
     .card h3{margin:0 0 6px;font-size:13px;color:var(--muted)}
     .card p{margin:0;font-size:28px;font-weight:700}
+    .pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:28px 0 52px}
+    .plan{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+    .plan h4{margin:0 0 8px;font-size:15px}
+    .plan .price{font-size:32px;font-weight:700;margin:0 0 10px}
     footer{border-top:1px solid var(--line);padding:14px 24px;color:var(--muted);font-size:12px;text-align:center}
   </style>
 </head>
@@ -30,8 +34,8 @@
 <header>
   <h1>ReplyPilot</h1>
   <nav>
-    <a href="#deploy">Deploy</a>
     <a href="#pricing">Pricing</a>
+    <a href="#deploy">Deploy</a>
     <a href="https://github.com/Brighton-Lyrax/browser-agent">GitHub</a>
   </nav>
 </header>
@@ -39,15 +43,35 @@
   <section class="hero">
     <h2>Sub-30-second lead <span>reply API + browser automation.</span></h2>
     <p>Capture leads, reply fast, queue follow-ups, track revenue impact, and accept payments from one FastAPI backend.</p>
-    <a class="cta" href="#deploy">Deploy in 3 minutes →</a>
+    <a class="cta" href="https://brightonlyrax.gumroad.com/l/rzafxw">Buy Hobby — $29 →</a>
   </section>
   <section class="grid">
     <div class="card"><h3>Lead Capture</h3><p>Any channel</p></div>
     <div class="card"><h3>First Reply</h3><p>&lt;30 seconds</p></div>
     <div class="card"><h3>Follow-Up Queue</h3><p>Multi-channel</p></div>
     <div class="card"><h3>Revenue Report</h3><p>Attribution</p></div>
-    <div class="card"><h3>Checkout</h3><p>PayPal + Stripe</p></div>
+    <div class="card"><h3>Checkout</h3><p>Gumroad + Stripe</p></div>
     <div class="card"><h3>Browser Actions</h3><p>Automation hooks</p></div>
+  </section>
+  <section id="pricing">
+    <h2>Pricing</h2>
+    <div class="pricing">
+      <div class="plan">
+        <h4>Hobby</h4>
+        <div class="price">$29/mo</div>
+        <a class="cta" href="https://brightonlyrax.gumroad.com/l/rzafxw">Buy Hobby</a>
+      </div>
+      <div class="plan">
+        <h4>Pro</h4>
+        <div class="price">$149/mo</div>
+        <a class="cta" href="https://brightonlyrax.gumroad.com/l/nlqnr">Buy Pro</a>
+      </div>
+      <div class="plan">
+        <h4>Agency</h4>
+        <div class="price">$499/mo</div>
+        <a class="cta" href="https://brightonlyrax.gumroad.com/l/seixck">Buy Agency</a>
+      </div>
+    </div>
   </section>
   <section id="deploy">
     <h2>Quick deploy</h2>
