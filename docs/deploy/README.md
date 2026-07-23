@@ -23,7 +23,7 @@ If login still asks for browser, rerun with headless mode only after creating AP
 ## LinkedIn (Auth Pending)
 Values provided:
 - client id: 77v41k3avdyj26
-- client secret: WPL_AP1.3eK4KUMwZOMAydRo.A/y5LQ==
+- client secret: [REDACTED]
 LinkedIn posting requires OAuth user access token or Marketing Developer Platform product approval. Add the token to `.env` as LINKEDIN_ACCESS_TOKEN when available, then enable posting in scripts.
 
 ## Gumroad (Live)
