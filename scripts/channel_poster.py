@@ -9,6 +9,15 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE))
+_env_path = BASE / ".env"
+if _env_path.exists():
+    from dotenv import load_dotenv
+    load_dotenv(_env_path)
+else:
+    import os
+    for _k in list(os.environ):
+        if _k.startswith("SMTP_") or False:
+            pass
 
 from app.channels.base import ChannelPost
 from app.channels import twitter, reddit, linkedin, hn, telegram, discord
