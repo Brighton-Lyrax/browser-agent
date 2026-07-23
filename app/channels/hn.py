@@ -27,9 +27,9 @@ def post(post: ChannelPost) -> dict:
     except ImportError:
         return {"ok": False, "error": "playwright not installed"}
 
+    profile_path = str(Path(__file__).resolve().parent.parent / ".playwright-hn-profile")
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(user_agent=(
+        context = p.chromium.launch_persistent_context(profile_path, headless=True, user_agent=(
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
         ))
@@ -40,7 +40,7 @@ def post(post: ChannelPost) -> dict:
             _login(page, username, password)
             logged_in = _is_logged_in(page)
             if not logged_in:
-                browser.close()
+                context.close()
                 return {"ok": False, "error": "login failed", "state": "login_failed", "url": page.url}
 
         page.goto("https://news.ycombinator.com/submit", timeout=15000, wait_until="domcontentloaded")
@@ -52,13 +52,13 @@ def post(post: ChannelPost) -> dict:
 
         title_input = page.locator("input[name='title']").first
         if not title_input.count() or not title_input.is_visible():
+            context.close()
             return {
                 "ok": False,
-                "error": "submit form not available: title input missing",
+                "error": "submit form not available",
                 "state": "form_missing",
                 "url": page.url,
                 "debug_body": page.evaluate("document.body.innerText")[:200],
-                "debug_html": page.evaluate("document.body.innerHTML")[:500],
             }
         title_input.fill(title)
 
@@ -68,7 +68,8 @@ def post(post: ChannelPost) -> dict:
             body_text = (post.content or "").strip()
             if body_text:
                 textarea = page.locator("textarea").first
-                textarea.wait_for(state="visible", timeout=15000)
+                if textarea.count() == 0:
+                    textarea = page.locator("textarea").first
                 textarea.fill(body_text)
 
         page.locator("form button[type='submit'], button:has-text('submit')").first.click()
@@ -77,7 +78,7 @@ def post(post: ChannelPost) -> dict:
             page.wait_for_load_state("domcontentloaded", timeout=12000)
         except Exception:
             pass
-        browser.close()
+        context.close()
         return {"ok": True, "url": page.url, "state": "submitted_or_navigate_pending"}
 
 
