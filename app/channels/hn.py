@@ -1,9 +1,11 @@
-"""Hacker News channel stub."""
 from __future__ import annotations
 import os
+from typing import Optional
 from .base import ChannelPost
-HN_COOKIE = os.getenv("HN_COOKIE", "")
-async def post(post: ChannelPost) -> dict:
-    if not HN_COOKIE:
-        return {"ok": False, "error": "HN_COOKIE missing"}
-    return {"ok": False, "error": "not implemented"}
+
+def missing() -> Optional[str]:
+    return None
+
+def post(post: ChannelPost) -> dict:
+    # HN posting requires authenticated session; left as manual-ready stub
+    return {"ok": False, "error": "HN posting not implemented; needs session automation"}

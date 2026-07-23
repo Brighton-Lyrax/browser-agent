@@ -1,0 +1,80 @@
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+BASE = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(BASE))
+
+from app.channels.base import ChannelPost
+from app.channels import twitter, reddit, linkedin, hn, telegram, discord
+
+CHANNELS = {
+    "twitter": twitter,
+    "x": twitter,
+    "reddit": reddit,
+    "linkedin": linkedin,
+    "hn": hn,
+    "telegram": telegram,
+    "discord": discord,
+}
+
+
+def main():
+    parser = argparse.ArgumentParser(description="ReplyPilot channel poster")
+    parser.add_argument("channel", choices=list(CHANNELS.keys()) + ["all"], help="target channel")
+    parser.add_argument("--content", required=False, default="", help="post text")
+    parser.add_argument("--url", required=False, default="", help="optional link")
+    parser.add_argument("--media", required=False, default="", help="comma-separated media URLs")
+    parser.add_argument("--list", action="store_true", help="list configured channels")
+    args = parser.parse_args()
+
+    if args.list:
+        for name, mod in CHANNELS.items():
+            missing = None
+            if hasattr(mod, "missing"):
+                missing = mod.missing()
+            status = "ready" if not missing else f"missing: {missing}"
+            print(f"{name}: {status}")
+        return
+
+    post_obj = ChannelPost(
+        content=args.content,
+        url=args.url or None,
+        media_urls=[m.strip() for m in args.media.split(",") if m.strip()] or None,
+    )
+
+    targets = []
+    if args.channel == "all":
+        targets = [("twitter", twitter), ("reddit", reddit), ("linkedin", linkedin), ("telegram", telegram), ("discord", discord)]
+    else:
+        targets = [(args.channel, CHANNELS[args.channel])]
+
+    results = []
+    for name, mod in targets:
+        missing = mod.missing() if hasattr(mod, "missing") else None
+        if missing:
+            row = {"channel": name, "ok": False, "error": f"missing env: {missing}"}
+        else:
+            try:
+                result = mod.post(post_obj)
+                row = {"channel": name, "ok": bool(result.get("ok")) if isinstance(result, dict) else False, "result": result}
+            except Exception as e:
+                row = {"channel": name, "ok": False, "error": str(e)}
+        results.append(row)
+        print(row)
+
+    out = BASE / "logs" / "posts.jsonl"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("a", encoding="utf-8") as f:
+        for row in results:
+            row["ts"] = datetime.now(timezone.utc).isoformat()
+            f.write(json.dumps(row) + "\n")
+
+
+if __name__ == "__main__":
+    main()

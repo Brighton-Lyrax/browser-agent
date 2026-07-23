@@ -1,9 +1,33 @@
-"""Twitter channel stub."""
 from __future__ import annotations
 import os
+import sys
+from typing import Optional
 from .base import ChannelPost
-TWITTER_BEARER = os.getenv("TWITTER_BEARER_TOKEN", "")
-async def post(post: ChannelPost) -> dict:
-    if not TWITTER_BEARER:
-        return {"ok": False, "error": "TWITTER_BEARER_TOKEN missing"}
-    return {"ok": False, "error": "not implemented"}
+
+BEARER = os.getenv("TWITTER_BEARER_TOKEN", "")
+API_KEY = os.getenv("TWITTER_API_KEY", "")
+API_SECRET = os.getenv("TWITTER_API_SECRET", "")
+ACCESS_TOKEN = os.getenv("TWITTER_ACCESS_TOKEN", "")
+ACCESS_SECRET = os.getenv("TWITTER_ACCESS_SECRET", "")
+
+def missing() -> Optional[str]:
+    if not all([BEARER, API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_SECRET]):
+        return "TWITTER_BEARER_TOKEN, TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_SECRET"
+    return None
+
+def post(post: ChannelPost) -> dict:
+    if missing():
+        return {"ok": False, "error": f"missing env: {missing()}"}
+    try:
+        import tweepy
+        client = tweepy.Client(
+            bearer_token=BEARER,
+            consumer_key=API_KEY,
+            consumer_secret=API_SECRET,
+            access_token=ACCESS_TOKEN,
+            access_token_secret=ACCESS_SECRET,
+        )
+        result = client.create_tweet(text=post.content or "")
+        return {"ok": True, "id": result.data.get("id") if result and result.data else None, "url": f"https://x.com/i/status/{result.data['id']}" if result and result.data else None}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
