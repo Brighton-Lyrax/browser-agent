@@ -17,14 +17,16 @@ def load_calendar_items():
     items = []
     if not CALENDAR.exists():
         return items
-    for line in CALENDAR.read_text(encoding="utf-8").splitlines():
-        m = re.match(r"^- (\w+): (.+)$", line.strip())
+    text = CALENDAR.read_text(encoding="utf-8")
+    for line in text.splitlines():
+        line = line.strip()
+        m = re.match(r"^- \w+: (\w+)\s+(.+)$", line)
         if not m:
             continue
-        channel, text = m.group(1), m.group(2)
+        channel, text_body = m.group(1), m.group(2)
         if channel not in {"Twitter", "LinkedIn", "Reddit", "Telegram", "Newsletter", "HN"}:
             continue
-        items.append({"channel": channel.lower(), "text": text})
+        items.append({"channel": channel.lower(), "text": text_body})
     return items
 
 
@@ -60,6 +62,7 @@ def main():
     row = {
         "ts": datetime.now(timezone.utc).isoformat(),
         "channel": channel,
+        "target": target,
         "content": text,
     }
     with POST_LOG.open("a", encoding="utf-8") as f:
